@@ -8,10 +8,9 @@ from app.models.user import User
 @bp.route("/api/v1/login", methods=["POST"])
 def login():
     # Collect info from the form
-    username = request.json.get['username']
-    password = request.json.get['password']
+    username, password = request.get_json()['username'], request.get_json()['password']
     user = User.query.filter_by(username=username).first()
-    if session["username"]:
+    if session.get('user_id'):
         return jsonify({"KO": "Already logged"})
     if user and user.check_password(password):
         session["username"] = username
@@ -22,8 +21,7 @@ def login():
 # Register route
 @bp.route("/api/v1/register", methods=["GET", "POST"])
 def register():
-    username = request.json['username']
-    password = request.json.get['password']
+    username, password = request.get_json.get('username'), request.get_json.get('password')
     is_admin = False #False by default
     if username is None or password is None:
         return jsonify({"KO": "Missing arguments"}), 400
@@ -36,7 +34,7 @@ def register():
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-        session["username"] = username
+        session["user_id"] = new_user.id
         return jsonify({"OK": 12345})
 
 
@@ -54,9 +52,12 @@ def list_users():
     all_users = result.scalars().all()
     return jsonify(Users=[user.to_dict() for user in all_users])
 
+'''
 # Query Users
 @bp.route("/api/v1/query_user/<id:int>", methods=["GET"])
 def query_user():
     result = db.session.execute(db.select(User))
     all_users = result.scalars().all()
     return jsonify(Users=[user.to_dict() for user in all_users])
+
+'''
