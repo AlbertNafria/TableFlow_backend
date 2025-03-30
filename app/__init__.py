@@ -11,8 +11,8 @@ def create_app(config_class=Config):
 
     # Inicialización extensiones
     db.init_app(app)
-    #with app.app_context():
-    #    db.create_all()
+    with app.app_context():
+        db.create_all()
 
     # Register blueprint
     from app.main import bp as main_bp

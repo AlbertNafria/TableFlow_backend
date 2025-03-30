@@ -4,15 +4,13 @@ from app import db
 # Database model
 class User(db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True, nullable=False)
-    password_hash = db.Column(db.String)
+    username = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(128))
     is_admin = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password, is_admin=False):
+    def __init__(self, username, is_admin=False):
         self.username = username
-        self.password_hash = password
         self.is_admin = is_admin
 
     def set_password(self, password):

@@ -1,4 +1,4 @@
-
+import re
 from flask import jsonify, request, session
 from app.accounts import bp
 from app.extensions import db
@@ -19,23 +19,22 @@ def login():
         return jsonify({"KO": "Bad Credentials"})
 
 # Register route
-@bp.route("/api/v1/register", methods=["GET", "POST"])
+@bp.route("/api/v1/register", methods=["POST", "PUT"])
 def register():
-    username, password = request.get_json.get('username'), request.get_json.get('password')
-    is_admin = False #False by default
+    username, password = request.get_json()['username'], request.get_json()['password']
     if username is None or password is None:
         return jsonify({"KO": "Missing arguments"}), 400
     elif User.query.filter_by(username=username).first():
         return jsonify({"KO": "User already registered!"})
-    elif username.match("^[a-zA-Z0-9_ ]*$"): #regular expresion string con espacios
+    elif re.match("^\S*$", username): #regular expresion to find spaces inbetween username
         return jsonify({"KO": "Don't use spaces"})
     else:
-        new_user = User(username=username)
+        new_user = User(username=username)#, password=password)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
         session["user_id"] = new_user.id
-        return jsonify({"OK": 12345})
+        return jsonify({"OK": 12345}), 201
 
 
 # Logout route
