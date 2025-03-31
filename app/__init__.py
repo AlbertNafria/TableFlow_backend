@@ -19,7 +19,7 @@ def create_app(config_class=Config):
     app.register_blueprint(main_bp)
 
     from app.accounts import bp as accounts_bp
-    app.register_blueprint(accounts_bp) # , url_prefix='/api/v1'
+    app.register_blueprint(accounts_bp, url_prefix='/api/v1')
 
     @app.route('/test/')
     def test():
