@@ -10,4 +10,3 @@ if os.path.exists(dotenv_path):
 if __name__ == '__main__':
     app = create_app()
     app.run()
-

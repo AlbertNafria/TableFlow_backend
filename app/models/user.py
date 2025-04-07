@@ -1,7 +1,6 @@
+from flask import request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import (URLSafeTimedSerializer as Serializer, BadSignature, SignatureExpired)
 from app import db
-import config
 
 # Database model
 class User(db.Model):
@@ -23,19 +22,3 @@ class User(db.Model):
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
-
-    def generate_auth_token(self, expiration=600):
-        s = Serializer(config['SECRET_KEY'], expires_in = expiration)
-        return s.dumps({ 'id': self.id })
-
-    @staticmethod
-    def verify_auth_token(token):
-        s = Serializer(config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None # valid token, but expired
-        except BadSignature:
-            return None # invalid token
-        user = User.query.get(data['id'])
-        return user

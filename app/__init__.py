@@ -1,18 +1,26 @@
-from flask import Flask, session
+from datetime import timedelta
+from flask import Flask
+from flask_session import Session
+from flask_jwt_extended import JWTManager # type: ignore
 from config import Config
 from app.extensions import db
 
-#login_manager = LoginManager()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    #config_class.init_app(app)
 
     # Inicialización extensiones
     db.init_app(app)
+    app.config['SESSION_SQLALCHEMY'] = db
+    Session(app)
     with app.app_context():
         db.create_all()
+
+    jwt = JWTManager(app)
+
+    # Create a permanent session
+#    app.permanent_session_lifetime = timedelta(days=1)
 
     # Register blueprint
     from app.main import bp as main_bp
